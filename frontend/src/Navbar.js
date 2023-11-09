@@ -38,14 +38,14 @@ const Navbar = () => {
                 </a>
 
                 <div className="navbar-dropdown">
-                <a className="navbar-item" href="https://github.com/cmmeyer1800/NginUI">
+                <a className="navbar-item" target="_blank" rel='noreferrer' href="https://github.com/cmmeyer1800/NginUI">
                     About
                 </a>
-                <a className="navbar-item" href="#null">
+                <a className="navbar-item" target="_blank" rel='noreferrer' href="https://nginui.readthedocs.io/">
                     Documentation
                 </a>
                 <hr className="navbar-divider"></hr>
-                <a className="navbar-item" href="https://github.com/cmmeyer1800/NginUI/issues">
+                <a className="navbar-item" target="_blank" rel='noreferrer' href="https://github.com/cmmeyer1800/NginUI/issues">
                     Report an issue
                 </a>
                 </div>
