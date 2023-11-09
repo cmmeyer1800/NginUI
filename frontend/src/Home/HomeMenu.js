@@ -22,7 +22,7 @@ const HomeMenu = (props) => {
                     </div>
                 </div>
                 <ul className="menu-list">
-                    <li><a href="/">Home</a></li>
+                    <li><a href="/#Dashboard">Dashboard</a></li>
                     <li><a href="/configs">Configurations</a></li>
                 </ul>
             </aside>
