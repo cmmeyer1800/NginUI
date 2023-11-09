@@ -1,17 +1,24 @@
-import {IconText} from './components/Icons.js'
+import { useState } from 'react'
 
+import {IconText} from './components/Icons.js'
 import {FaGear} from 'react-icons/fa6'
 
 
 const Navbar = () => {
+    const [mobileOpen, setMobileOpen] = useState(false);
+
     return (
-        <nav className="navbar" role="navigation" aria-label="main navigation">
+        <nav className="navbar" role="navigation" aria-label="main navigation" style={{borderBottom: "1px solid"}}>
         <div className="navbar-brand">
             <a className="navbar-item has-text-weight-bold" href="/">
                 NginUI
             </a>
 
-            <a href="#null" role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <a href="#null" role="button" className={`navbar-burger ${mobileOpen ? "is-active": ""}`}
+               aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" onClick={(e) => {
+                e.preventDefault();
+                setMobileOpen(!mobileOpen);
+               }}>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>

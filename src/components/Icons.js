@@ -1,8 +1,8 @@
 
 const IconText = (props) => {
     return (
-        <span class="icon-text">
-            <span class="icon">
+        <span className="icon-text">
+            <span className="icon">
                 {props.icon}
             </span>
             <span>{props.children}</span>
@@ -10,4 +10,23 @@ const IconText = (props) => {
     )
 }
 
-export {IconText};
+const IconTextRight = (props) => {
+    return (
+        <span className="icon-text">
+            <span>{props.children}</span>
+            <span className="icon">
+                {props.icon}
+            </span>
+        </span>
+    )
+}
+
+const Icon = (props) => {
+    return (
+        <span className="icon">
+            {props.icon}
+        </span>
+    )
+}
+
+export {IconText, IconTextRight, Icon};

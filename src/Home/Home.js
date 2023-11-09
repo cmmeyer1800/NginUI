@@ -1,7 +1,9 @@
 
 function Home() {
+
   return (
-    <div className="">
+    <div className="box">
+      <p className="has-text-centered title">NginUI Home</p>
     </div>
   );
 }
