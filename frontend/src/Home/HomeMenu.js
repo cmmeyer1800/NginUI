@@ -22,8 +22,8 @@ const HomeMenu = (props) => {
                     </div>
                 </div>
                 <ul className="menu-list">
-                    <li><a href="/#Dashboard">Dashboard</a></li>
-                    <li><a href="/configs">Configurations</a></li>
+                    <li><a href="/#Dashboard" onClick={(e) => {e.preventDefault(); props.setPage("dashboard")}}>Dashboard</a></li>
+                    <li><a href="/#configs" onClick={(e) => {e.preventDefault(); props.setPage("config")}}>Configurations</a></li>
                 </ul>
             </aside>
             }

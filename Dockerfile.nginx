@@ -1,0 +1,9 @@
+FROM ubuntu:22.04
+
+RUN apt-get update
+RUN apt-get install -y nginx
+RUN apt-get install -y curl
+
+COPY nginx/conf/stub_status.conf /etc/nginx/conf.d/stub_status.conf
+
+# CMD ["nginx", "-g", "daemon off;"]
