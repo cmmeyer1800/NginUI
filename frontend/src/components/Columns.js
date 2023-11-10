@@ -1,8 +1,11 @@
 
 
 const Columns = (props) => {
+
+    const multiLine = (props.isMultiline !== undefined) ? "is-multiline": "";
+
     return (
-        <div className="columns">
+        <div className={`columns ${multiLine}`}>
             {props.children}
         </div>
     )

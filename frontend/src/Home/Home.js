@@ -10,6 +10,8 @@ function Home() {
   const [shownPage, setShownPage] = useState("dashboard");
 
   return (
+    <div>
+      <br></br>
       <Columns>
         <Column isNarrow={true}>
           <HomeMenu sideBarOpen={sideBarOpen} setSideBarOpen={setSideBarOpen} setPage={setShownPage}/>
@@ -18,7 +20,9 @@ function Home() {
           {shownPage === "dashboard" && <Dashboard />}
           {shownPage === "config" && <Config />}
         </Column>
+        <Column isNarrow></Column>
       </Columns>
+    </div>
   );
 }
 

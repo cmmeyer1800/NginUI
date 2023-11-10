@@ -8,7 +8,7 @@ const Layout = () => {
     <div className="hero is-fullheight">
         <Navbar />
         <div className="ml-1 mr-1 is-fullheight">
-        <Outlet />
+          <Outlet />
         </div>
         <Footer/>
     </div>
