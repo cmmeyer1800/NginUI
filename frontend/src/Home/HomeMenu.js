@@ -1,9 +1,11 @@
 import { Icon, IconTextRight } from "../components/Icons";
 import {MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight} from 'react-icons/md'
 
+import './menu.css'
+
 const HomeMenu = (props) => {
     return (
-        <div className="box">
+        <div className="box homeMenu">
             { props.sideBarOpen &&
             <aside className="menu">
                 <div className="menu-label">

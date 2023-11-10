@@ -13,9 +13,10 @@ function Home() {
     <div>
       <br></br>
       <Columns>
-        <Column isNarrow={true}>
+        <Column width={1}>
           <HomeMenu sideBarOpen={sideBarOpen} setSideBarOpen={setSideBarOpen} setPage={setShownPage}/>
         </Column>
+        <Column width={1}></Column> {/* Spacer */}
         <Column>
           {shownPage === "dashboard" && <Dashboard />}
           {shownPage === "config" && <Config />}

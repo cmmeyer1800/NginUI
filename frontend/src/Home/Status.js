@@ -25,16 +25,28 @@ const Status = (props) => {
     const [down, setDown] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:3090/api/nginx_status')
-        .then(response => response.json())
-        .then(json => {
-            setData(json)
-            setDown(false);
-        })
-        .catch(error => {
-            console.error(error)
-            setDown(true);
-        });
+        // Fetch function
+        const fetchData = () => {
+            fetch('http://localhost:3090/api/nginx_status')
+            .then(response => response.json())
+            .then(json => {
+                setData(json)
+                setDown(false);
+            })
+            .catch(error => {
+                console.error(error)
+                setDown(true);
+            });
+        }
+    
+        // Call fetch immediately on page load
+        fetchData();
+    
+        // Then call fetch every 5 seconds
+        const interval = setInterval(fetchData, 5000);
+    
+        // Cleanup function to clear the interval when the component unmounts
+        return () => clearInterval(interval);
     }, []);
 
     var downMsg
