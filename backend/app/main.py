@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
-import httpx
+import httpx # pylint: disable=import-error
 from fastapi import FastAPI, Request, APIRouter
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -67,5 +66,24 @@ async def nginx_status(request: Request):
     response = await requests_client.get("http://nginui-nginx/nginx_status")
     
     return nginx_stub_decode(response.text)
+
+@api.get("/configs")
+async def configs(request: Request):
+    return {
+        "configs": [
+            {
+                "name": "test.conf",
+                "listen": "80",
+                "server_name": "localhost",
+                "locations": [
+                    {
+                        "/": {}
+                    }
+                ],
+                "last_modified":"11/12/2023"
+            }
+        ]
+    }
+
 
 app.include_router(api)

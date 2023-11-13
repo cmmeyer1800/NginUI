@@ -3,7 +3,7 @@ import { useState } from "react";
 import {Column, Columns} from "../components/Columns"
 import HomeMenu from "./HomeMenu";
 import Dashboard from "./Dashboard"
-import Config from "./Config"
+import ConfigBody from "./Config"
 
 function Home() {
   const [sideBarOpen, setSideBarOpen] = useState(true);
@@ -19,7 +19,7 @@ function Home() {
         <Column width={1}></Column> {/* Spacer */}
         <Column>
           {shownPage === "dashboard" && <Dashboard />}
-          {shownPage === "config" && <Config />}
+          {shownPage === "config" && <ConfigBody />}
         </Column>
         <Column isNarrow></Column>
       </Columns>

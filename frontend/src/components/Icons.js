@@ -22,8 +22,11 @@ const IconTextRight = (props) => {
 }
 
 const Icon = (props) => {
+
+    const isLarge = (props.isLarge) ? "is-large" : "";
+
     return (
-        <span className="icon">
+        <span className={`icon ${isLarge}`}>
             {props.icon}
         </span>
     )
