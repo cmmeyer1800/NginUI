@@ -1,18 +1,6 @@
 version: '3'
 
 services:
-  nginx:
-    container_name: nginui-nginx
-    build:
-      context: .
-      dockerfile: Dockerfile.nginx
-    image: nginx:local
-    command: /usr/sbin/nginx -g 'daemon off;'
-    # command: /bin/bash
-    cap_add:
-      - NET_ADMIN
-    ports:
-      - "3013:3013"
   nginui-backend-dev:
     build:
       context: .
@@ -20,31 +8,16 @@ services:
     image: "nginui-backend:local"
     ports:
       - "3090:80"
+
+  mongo:
+    image: mongo
+    restart: always
+    container_name: nginui-db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: nginui
+      MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - ./backend:/backend-dev
-    working_dir: /backend-dev
-    command: 'uvicorn app.main:app --reload --host 0.0.0.0 --port 80'
-  # nginui:
-  #   build:
-  #     context: .
-  #   image: nginui:local
-  #   command: /app/ovpn-admin
-  #   environment:
-  #     OVPN_DEBUG: "true"
-  #     OVPN_VERBOSE: "true"
-  #     OVPN_NETWORK: "192.168.100.0/24"
-  #     OVPN_CCD: "true"
-  #     OVPN_CCD_PATH: "/mnt/ccd"
-  #     EASYRSA_PATH: "/mnt/easyrsa"
-  #     OVPN_SERVER: "127.0.0.1:7777:tcp"
-  #     OVPN_INDEX_PATH: "/mnt/easyrsa/pki/index.txt"
-  #     OVPN_AUTH: "true"
-  #     OVPN_AUTH_DB_PATH: "/mnt/easyrsa/pki/users.db"
-  #     LOG_LEVEL: "debug"
-  #   network_mode: service:openvpn
-  #   volumes:
-  #     - ./easyrsa_master:/mnt/easyrsa
-  #     - ./ccd_master:/mnt/ccd
+      - ./mongo:/data/db
 
 networks:
   default:

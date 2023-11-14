@@ -1,17 +1,28 @@
+import datetime
 from contextlib import asynccontextmanager
 import httpx # pylint: disable=import-error
-from fastapi import FastAPI, Request, APIRouter
+from fastapi import FastAPI, Request, APIRouter, Response, status
+from pymongo import MongoClient
 from fastapi.middleware.cors import CORSMiddleware
 
 
+config = {
+    "ATLAS_URI": "mongodb://nginui:password@nginui-db",
+    "DB_NAME": "nginui"
+}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.requests_client = httpx.AsyncClient()
+    app.mongodb_client = MongoClient(config["ATLAS_URI"])
+    app.database = app.mongodb_client[config["DB_NAME"]]
+
     yield
     await app.requests_client.aclose()
+    app.mongodb_client.close()
 
 app = FastAPI(lifespan=lifespan)
+
 
 # app.mount("/", StaticFiles(directory="static"), name="static")
 
@@ -63,27 +74,59 @@ def nginx_stub_decode(stub_info: str) -> dict:
 @api.get("/nginx_status")
 async def nginx_status(request: Request):
     requests_client = request.app.requests_client
-    response = await requests_client.get("http://nginui-nginx/nginx_status")
+    response = await requests_client.get("http://127.0.0.1/nginx_status")
     
     return nginx_stub_decode(response.text)
 
 @api.get("/configs")
 async def configs(request: Request):
+
+    confs: list[dict] = list(request.app.database.configs.find({}, limit=100))
+
+    for conf in confs:
+        conf["_id"] = str(conf["_id"])
+
     return {
-        "configs": [
-            {
-                "name": "test.conf",
-                "listen": "80",
-                "server_name": "localhost",
-                "locations": [
-                    {
-                        "/": {}
-                    }
-                ],
-                "last_modified":"11/12/2023"
-            }
-        ]
+        "configs": [c for c in confs]
     }
 
+
+@api.post("/configs")
+async def create_config(request: Request, response: Response):
+    data = await request.json()
+
+    if len(list(request.app.database.configs.find(data))) > 0:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            "status": "failed",
+            "message": "config already exists"
+        }
+
+    lm = datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S")
+    data["last_modified"] = lm
+
+    request.app.database.configs.insert_one(data)
+
+    return {
+        "status": "success"
+    }
+
+
+@api.delete("/configs")
+async def delete_config(request: Request, response: Response):
+    data = await request.json()
+
+    result = request.app.database.configs.delete_one(data)
+
+    if result.deleted_count == 1:
+        return {
+            "status": "success"
+        }
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            "status": "failed",
+            "message": "No document matched the filter"
+        }
 
 app.include_router(api)
