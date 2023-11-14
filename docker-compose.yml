@@ -1,16 +1,11 @@
-version: '3'
-
 services:
-  nginui-backend:
+  nginui-backend-dev:
     build:
       context: .
     container_name: nginui-backend
     image: "nginui-backend:local"
     ports:
       - "3090:80"
-    volumes:
-      - ./backend:/backend-dev
-    command: 'bash /backend-entry-dev.sh'
 
   mongo:
     image: mongo

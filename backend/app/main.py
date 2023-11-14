@@ -4,6 +4,7 @@ import httpx # pylint: disable=import-error
 from fastapi import FastAPI, Request, APIRouter, Response, status
 from pymongo import MongoClient
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 
 config = {
@@ -95,12 +96,21 @@ async def configs(request: Request):
 async def create_config(request: Request, response: Response):
     data = await request.json()
 
+    if "name" not in data:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            "status": "failed",
+            "message": "name field is required"
+        }
+
     if len(list(request.app.database.configs.find(data))) > 0:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {
             "status": "failed",
             "message": "config already exists"
         }
+    
+    data["name"] = f"{data['name']}.conf"
 
     lm = datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S")
     data["last_modified"] = lm
@@ -128,5 +138,12 @@ async def delete_config(request: Request, response: Response):
             "status": "failed",
             "message": "No document matched the filter"
         }
+    
+@api.get("/sync")
+async def synchronize(response: Response):
+    confs = os.listdir("/etc/nginx/conf.d")
+    return {
+        "status": list(confs)
+    }
 
 app.include_router(api)

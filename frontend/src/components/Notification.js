@@ -21,7 +21,7 @@ const Notification = (props) => {
     return (
         <div className={`notification is-danger ${isVisible ? 'fade-in' : 'fade-out'}`} style={{position: 'fixed', bottom: '20%', width: 'auto', left: '50%', transform: 'translateX(-50%)'}}>
             <button className="delete" onClick={hideNotification}></button>
-            {props.message}
+            {props.children}
         </div>
     )
 }
