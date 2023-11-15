@@ -85,10 +85,10 @@ const Config = (props) => {
                         <p className="has-text-centered"><small>Last Modified: {props.config.last_modified}</small></p>
                     </div>
                 </div>
-                <div class="media-right">
-                    <a class="delete" onClick={(e) => {
-                        e.preventDefault();
-                    }}></a>
+                <div className="media-right">
+                    <button className="delete" onClick={(e) => {
+                        e.preventDefault(); 
+                    }}></button>
                 </div>
             </article>
         </a>

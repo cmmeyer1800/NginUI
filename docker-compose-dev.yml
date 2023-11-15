@@ -2,10 +2,16 @@ version: '3'
 
 services:
   nginui-backend:
+    image: "nginui-backend:local"
     build:
       context: .
     container_name: nginui-backend
-    image: "nginui-backend:local"
+    environment:
+      MONGO_HOST: nginui-db
+      MONGO_USER: nginui
+      MONGO_PASSWORD: password
+      MONGO_DB: nginui
+      CORS_ORIGINS: '["http://localhost:3000"]' # Note MUST be JSON format string
     ports:
       - "3090:80"
     volumes:

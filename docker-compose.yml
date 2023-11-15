@@ -1,9 +1,14 @@
 services:
   nginui-backend-dev:
+    image: "nginui-backend:local"
     build:
       context: .
     container_name: nginui-backend
-    image: "nginui-backend:local"
+    environment:
+      MONGO_HOST: nginui-db
+      MONGO_USER: nginui
+      MONGO_PASSWORD: password
+      MONGO_DB: nginui
     ports:
       - "3090:80"
 

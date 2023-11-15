@@ -1,0 +1,1 @@
+from app.routes.api.configs.configs import router as configs_router

@@ -27,7 +27,7 @@ const Status = (props) => {
     useEffect(() => {
         // Fetch function
         const fetchData = () => {
-            fetch('http://localhost:3090/api/nginx_status')
+            fetch('http://localhost:3090/api/status/nginx')
             .then(response => response.json())
             .then(json => {
                 setData(json)

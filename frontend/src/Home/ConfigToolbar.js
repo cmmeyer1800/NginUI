@@ -4,17 +4,54 @@ import { FaSync, FaCheck } from "react-icons/fa";
 import { IconText } from "../components/Icons";
 import Notification from '../components/Notification';
 
-const ConfigToolbar = (props) => {
+const SyncResolveModal = (props) => {
+    return (
+        <div className={`modal ${props.active ? 'is-active':''}`}>
+            <div className="modal-background"></div>
+            <div className="modal-content box">
+                <p className="subtitle has-text-centered"><strong className='has-text-danger'>DB-OS Differences Detected</strong></p>
+                <hr></hr>
+                <div className='columns'>
+                    <div className='column'>
+                        <ul>
+                            {props.diffs && props.diffs.missing_from_os && props.diffs.missing_from_os.map((diff, index) => {
+                                return (
+                                    <li key={index}>- {diff}</li>
+                                )
+                            })}
+                        </ul>
+                    </div>
+                    <div className='column'>
+                    <ul>
+                            {props.diffs && props.diffs.missing_from_db && props.diffs.missing_from_db.map((diff, index) => {
+                                return (
+                                    <li key={index}>- {diff}</li>
+                                )
+                            })}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <button className="modal-close is-large" aria-label="close" onClick={(e) => {
+                e.preventDefault();
+                props.setActive(false);
+            }}></button>
+        </div>
+    )
+}
+
+const Sync = (props) => {
+    const [resolveActive, setResolveActive] = useState(false);
     const [down, setDown] = useState(null);
+    const [diffs, setDiffs] = useState(null);
 
     async function syncCall(){
-        return fetch('http://localhost:3090/api/sync')
+        return fetch('http://localhost:3090/api/configs/sync')
         .then(async (data) => {
             if (data.ok) {
                 data = await data.json()
                 setDown(false);
                 return data;
-                //Here you have your data...
             } else {
                 setDown(true);
                 return null;
@@ -29,27 +66,46 @@ const ConfigToolbar = (props) => {
 
     async function doSync() {
         const data = await syncCall();
+
+        if(data.diffs){
+            setDiffs(data.details)
+            setResolveActive(true);
+        }
+
         console.log(data)
     }
 
-    return (
+    return(
         <div>
-            { down && <Notification>Sync API call failed</Notification>}
-            <span style={{borderRight: "solid", paddingRight: "10px"}}>
-                <a href="#sync" onClick={(e) => {
-                    e.preventDefault();
-                    doSync();
-                }}>
-                    <IconText icon={<FaSync/>}>Sync</IconText>
-                </a>
-            </span>
-            <span style={{borderRight: "solid", paddingLeft: "10px", paddingRight: "10px"}}>
-                <a href="#sync" onClick={(e) => {
-                    e.preventDefault();
-                }}>
-                    <IconText icon={<FaCheck/>}>Verify</IconText>
-                </a>
-            </span>
+            <SyncResolveModal diffs={diffs} active={resolveActive} setActive={setResolveActive} />
+            <a href="#sync" onClick={(e) => {
+                e.preventDefault();
+                doSync();
+            }}>
+                { down && <Notification>Sync API call failed</Notification>}
+                <IconText icon={<FaSync/>}>Sync</IconText>
+            </a>
+        </div>
+    )
+
+}
+
+const ConfigToolbar = (props) => {
+
+    return (
+        <div className='level'>
+            <div className='level-left'>
+                <div className='level-item' style={{borderRight: "solid", paddingRight: "10px"}}>
+                    <Sync/>
+                </div>
+                <div className='level-item' style={{borderRight: "solid", paddingRight: "10px"}}>
+                    <a href="#verify" onClick={(e) => {
+                        e.preventDefault();
+                    }}>
+                        <IconText icon={<FaCheck/>}>Verify</IconText>
+                    </a>
+                </div>
+            </div>
         </div>
     )
 }
