@@ -14,20 +14,56 @@ from app.routes.api.configs.common import * # TODO: Fix Wildcard Import
 router = APIRouter(prefix="/configs")
 
 @router.get("/")
-async def configs(request: Request):
+async def configs(response: Response):
 
-    confs: list[dict] = list(request.app.database.configs.find({}, limit=100))
+    confs = get_configs()
 
-    for conf in confs:
-        conf["_id"] = str(conf["_id"])
+    if confs is None:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            "status": "failed",
+            "message": "internal server error"
+        }
 
     return {
-        "configs": [c for c in confs]
+        "status": "success",
+        "configs": confs
     }
 
 
 @router.post("/")
-async def create_config(request: Request, response: Response):
+async def create_config_route(request: Request, response: Response):
+    data = await request.json()
+
+    if "name" not in data:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            "status": "failed",
+            "message": "name field is required"
+        }
+    
+    res = create_config(f"{data['name']}.conf", "")
+
+    if res == 1:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            "status": "failed",
+            "message": "config already exists"
+        }
+    elif res == 2:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            "status": "failed",
+            "message": "internal server error"
+        }
+    else:
+        return {
+            "status": "success"
+        }
+
+
+@router.delete("/")
+async def delete_config_route(request: Request, response: Response):
     data = await request.json()
 
     if "name" not in data:
@@ -37,49 +73,16 @@ async def create_config(request: Request, response: Response):
             "message": "name field is required"
         }
 
-    if len(list(request.app.database.configs.find(data))) > 0:
+    result = delete_config(data["name"])
+
+    if not result:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {
             "status": "failed",
-            "message": "config already exists"
+            "message": "config does not exist"
         }
     
-    data["name"] = f"{data['name']}.conf"
-
-    lm = datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S")
-    data["last_modified"] = lm
-
-    request.app.database.configs.insert_one(data)
-
     return {
         "status": "success"
     }
 
-
-@router.delete("/")
-async def delete_config(request: Request, response: Response):
-    data = await request.json()
-
-    result = request.app.database.configs.delete_one(data)
-
-    if result.deleted_count == 1:
-        return {
-            "status": "success"
-        }
-    else:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return {
-            "status": "failed",
-            "message": "No document matched the filter"
-        }
-
-@router.get("/sync")
-async def synchronize(request: Request, response: Response):
-
-    diff_out = diff_sync_status(list(request.app.database.configs.find({})))
-
-    return {
-        "status": "success",
-        "diffs": len(diff_out["missing_from_os"]) + len(diff_out["missing_from_db"]) != 0,
-        "details": diff_out
-    }

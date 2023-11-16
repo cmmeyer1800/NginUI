@@ -9,10 +9,7 @@ class Settings(BaseSettings):
     """
     APP_NAME: str = "NginUI"
 
-    MONGO_HOST: str
-    MONGO_USER: str
-    MONGO_PASSWORD: str
-    MONGO_DB: str
+    VERSION: str = "0.1.0"
 
     CORS_ORIGINS: Optional[list[str]] = []
 

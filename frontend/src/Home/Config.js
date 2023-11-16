@@ -102,7 +102,7 @@ const Config = (props) => {
                             <br></br>
                             <strong>Server Name:</strong> {props.config.server_name} 
                             <br></br>
-                            <strong>Locations:</strong> {props.config.locations !== undefined ? props.config.locations.length : ''} 
+                            <strong>Locations:</strong> {props.config.locations !== undefined ? props.config.locations : ''} 
                         </p>
                         <p className="has-text-centered"><small>Last Modified: {props.config.last_modified}</small></p>
                     </div>
@@ -132,6 +132,7 @@ const ConfigBody = (props) => {
         fetch('http://localhost:3090/api/configs')
         .then(response => response.json())
         .then(json => {
+            console.log(json)
             setData(json.configs);
             setDown(false);
         })
