@@ -13,6 +13,8 @@ const SyncResolveModal = (props) => {
                 <hr></hr>
                 <div className='columns'>
                     <div className='column'>
+                    <p className='subtitle'><strong>In Database Not In Nginx:</strong></p>
+                    <br></br>
                         <ul>
                             {props.diffs && props.diffs.missing_from_os && props.diffs.missing_from_os.map((diff, index) => {
                                 return (
@@ -22,6 +24,8 @@ const SyncResolveModal = (props) => {
                         </ul>
                     </div>
                     <div className='column'>
+                    <p className='subtitle'><strong>In Nginx Not In Database:</strong></p>
+                    <br></br>
                     <ul>
                             {props.diffs && props.diffs.missing_from_db && props.diffs.missing_from_db.map((diff, index) => {
                                 return (

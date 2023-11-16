@@ -69,6 +69,28 @@ const AddConfigModal = (props) => {
 }
 
 const Config = (props) => {
+    // TODO: Handle Deletion Failure
+    const doDelete = (nameParam) => {
+        fetch('http://localhost:3090/api/configs', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: nameParam
+            })
+        })
+        .then(async response => {
+            const data = await response.json();
+            if(!response.ok) {
+                console.error("Request Error: ", data.message);
+            }
+        })
+        .catch(error => {
+            console.error(error)
+        });
+    }
+
     return (
         <a className="box" href={`/${props.config.name}`}>
             <article className="media">
@@ -87,7 +109,11 @@ const Config = (props) => {
                 </div>
                 <div className="media-right">
                     <button className="delete" onClick={(e) => {
-                        e.preventDefault(); 
+                        e.preventDefault();
+                        doDelete(props.config.name);
+                        setTimeout(() => {
+                            props.reload();
+                        }, 250 );
                     }}></button>
                 </div>
             </article>
@@ -137,7 +163,7 @@ const ConfigBody = (props) => {
             { !down &&
             <Columns isMultiline>
                 { data.map((item, index) => (
-                    <Column key={index} width={3}><Config config={item}/></Column>
+                    <Column key={index} width={3}><Config reload={fetchData} config={item}/></Column>
                 ))}
                 <Column width={3}><a className="box" href="#new_config" onClick={(e) => {
                     e.preventDefault();
