@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 import os
+import asyncio
+
 
 # def diff_sync_status(db_confs: list[dict]):
 
@@ -25,11 +27,18 @@ def parse_config(conf: str) -> dict:
 
     listen_start_index = conf.find("listen")
     listen_end_index = conf.find(";", listen_start_index)
-    listen = conf[listen_start_index:listen_end_index].split()[1]
+    if listen_start_index == -1 or listen_end_index == -1:
+        listen = "none"
+    else:
+        listen = conf[listen_start_index:listen_end_index].split()[1]
+
 
     server_name_start_index = conf.find("listen")
     server_name_end_index = conf.find(";", listen_start_index)
-    server_name = conf[server_name_start_index:server_name_end_index].split()[1]
+    if server_name_start_index == -1 or server_name_end_index == -1:
+        server_name = "none"
+    else:
+        server_name = conf[server_name_start_index:server_name_end_index].split()[1]
 
     return (server_name, listen, locs)
 
@@ -85,3 +94,43 @@ def create_config(name: str, content: str) -> bool:
         except Exception as e:
             print(e) # TODO: use logging
             return 2
+
+
+async def verify_configs():
+
+    proc = await asyncio.create_subprocess_exec(
+    'nginx','-t',
+    stdout=asyncio.subprocess.PIPE,
+    stderr=asyncio.subprocess.PIPE)
+
+    stdout, stderr = await proc.communicate()
+    stderr = stderr.decode("utf-8")
+
+    return ("test failed" not in stderr, stderr)
+
+
+def get_config(name: str) -> str:
+    config_path = f"/etc/nginx/conf.d/{name}"
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r") as f:
+                return f.read()
+        except Exception as e:
+            print(e) # TODO: use logging
+            return None
+    else:
+        return None
+    
+
+def set_config(name: str, content: str) -> bool:
+    config_path = f"/etc/nginx/conf.d/{name}"
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "w") as f:
+                f.write(content)
+            return 0
+        except Exception as e:
+            print(e) # TODO: use logging
+            return 2
+    else:
+        return 1

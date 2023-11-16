@@ -28,4 +28,4 @@ dev-rebuild:
 	docker-compose -f docker-compose-dev.yml build --no-cache
 
 dev-up:
-	docker-compose -f docker-compose-dev.yml up
+	docker-compose -f docker-compose-dev.yml up --build

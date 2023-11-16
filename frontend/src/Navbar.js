@@ -28,9 +28,9 @@ const Navbar = () => {
         <div id="navbarBasicExample" className="navbar-menu">
             <div className="navbar-start">
 
-            <a className="navbar-item" href="#null">
+            {/* <a className="navbar-item" href="#null">
                 Something 1
-            </a>
+            </a> */}
 
             <div className="navbar-item has-dropdown is-hoverable">
                 <a className="navbar-link" href="#null">

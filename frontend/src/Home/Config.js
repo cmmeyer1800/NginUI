@@ -68,7 +68,90 @@ const AddConfigModal = (props) => {
     )
 }
 
+const EditConfigModal = (props) => {
+
+    const [config, setConfig] = useState(null);
+
+    const setConfigCall = (configParam) => {
+        fetch(`http://localhost:3090/api/configs/${props.name}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                config: configParam
+            })
+        })
+        .then(async response => {
+            const data = await response.json();
+            if(!response.ok || data.status !== 'success') {
+                console.error("Request Error: ", data.message);
+            }
+        })
+        .catch(error => {
+            console.error(error)
+        });
+    
+    }
+
+    useEffect(() => {
+        if(props.active) {
+            fetch(`http://localhost:3090/api/configs/${props.name}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(async response => {
+                const data = await response.json();
+                if(!response.ok || data.status !== 'success') {
+                    console.error("Request Error: ", data.message);
+                } else {
+                    setConfig(data.config)
+                }
+            })
+            .catch(error => {
+                console.error(error)
+            });
+        }
+    }, [props.active]);
+
+    return (
+        <div className={`modal ${props.active ? 'is-active':''}`}>
+            <div className="modal-background"></div>
+            <div className="modal-content box">
+                <p className="subtitle has-text-centered"><strong>Edit Configuration</strong></p>
+                <hr></hr>
+                <div className="field">
+                    <div className={`control ${config === null ? 'is-loading' : ''}`}>
+                        <textarea value={config} className="textarea" placeholder="Config Loading" rows={20} onChange={(e) => {
+                            e.preventDefault();
+                            setConfig(e.target.value);
+                        }}></textarea>
+                    </div>
+                </div>
+                <button className="button is-success mr-4" onClick={(e) => {
+                    e.preventDefault();
+                    setConfigCall(config);
+                    props.setActive(false);
+                }}>Save</button>
+                <button className="button is-danger" onClick={(e) => {
+                    e.preventDefault();
+                    props.setActive(false);
+                }}>Discard</button>
+            </div>
+            <button className="modal-close is-large" aria-label="close" onClick={(e) => {
+                e.preventDefault();
+                props.setActive(false);
+            }}></button>
+        </div>
+    )
+}
+
 const Config = (props) => {
+
+    const [editActive, setEditActive] = useState(false);
+
     // TODO: Handle Deletion Failure
     const doDelete = (nameParam) => {
         fetch('http://localhost:3090/api/configs', {
@@ -92,7 +175,12 @@ const Config = (props) => {
     }
 
     return (
-        <a className="box" href={`/${props.config.name}`}>
+        <>
+        <EditConfigModal name={props.config.name} active={editActive} setActive={setEditActive}/>
+        <a className="box" href={`/${props.config.name}`} onClick={(e) => {
+            e.preventDefault();
+            setEditActive(true);
+        }}>
             <article className="media">
                 <div className="media-content">
                     <div className="content">
@@ -118,6 +206,7 @@ const Config = (props) => {
                 </div>
             </article>
         </a>
+        </>
     )
 }
 
