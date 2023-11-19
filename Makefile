@@ -29,3 +29,7 @@ dev-rebuild:
 
 dev-up:
 	docker-compose -f docker-compose-dev.yml up --build
+
+clean:
+	rm -rf mongo
+	find backend -type d -name '__pycache__' -exec rm -rf {} +

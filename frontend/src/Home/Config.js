@@ -1,10 +1,57 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FaPlusSquare } from 'react-icons/fa';
 
 import { Column, Columns } from "../components/Columns";
 import Notification from "../components/Notification";
 import { IconText } from "../components/Icons";
 import ConfigToolbar from "./ConfigToolbar";
+
+
+const BetterTextArea = (props) => {
+    const codeAreaRef = useRef();
+    const [height, setHeight] = useState(1);
+
+    useEffect(() => {
+        if(props.val !== null && props.val !== undefined){
+            setHeight(props.val.split(/\r\n|\r|\n/).length)
+        }
+    })
+
+    return (        
+        <textarea
+          name='config editor'
+          value={props.val}
+          ref={codeAreaRef}
+          className="textarea"
+          rows={height}
+          onChange={(e) => {
+            props.updateVal(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key == 'Tab') {
+              e.preventDefault();
+              const { selectionStart, selectionEnd } = e.target;
+        
+              const newText =
+                props.val.substring(0, selectionStart) +
+                '    ' + // Edit this for type tab you want
+                       // Here it's 2 spaces per tab
+                props.val.substring(selectionEnd, props.val.length);
+        
+              codeAreaRef.current.focus();
+              codeAreaRef.current.value = newText;
+        
+              codeAreaRef.current.setSelectionRange(
+                selectionStart + 4,
+                selectionStart + 4
+              );
+        
+              props.updateVal(newText);
+            }
+          }}
+        />
+    )
+}
 
 
 const AddConfigModal = (props) => {
@@ -124,10 +171,12 @@ const EditConfigModal = (props) => {
                 <hr></hr>
                 <div className="field">
                     <div className={`control ${config === null ? 'is-loading' : ''}`}>
-                        <textarea value={config} className="textarea" placeholder="Config Loading" rows={20} onChange={(e) => {
+                        <BetterTextArea val={config} updateVal={setConfig}/>
+                        {/* <textarea value={config} className="textarea" placeholder="Config Loading" rows={20} onChange={(e) => {
                             e.preventDefault();
+                            console.log(e.target.value);
                             setConfig(e.target.value);
-                        }}></textarea>
+                        }}></textarea> */}
                     </div>
                 </div>
                 <button className="button is-success mr-4" onClick={(e) => {
@@ -221,7 +270,6 @@ const ConfigBody = (props) => {
         fetch('http://localhost:3090/api/configs')
         .then(response => response.json())
         .then(json => {
-            console.log(json)
             setData(json.configs);
             setDown(false);
         })
