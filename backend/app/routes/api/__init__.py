@@ -1,3 +1,5 @@
+"""Base of API routes."""
+
 from fastapi import APIRouter
 
 from app.routes.api.configs import configs_router

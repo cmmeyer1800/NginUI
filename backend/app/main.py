@@ -1,3 +1,9 @@
+"""Main module of Nginui backend
+
+Author: Collin Meyer
+Last Modified: November 19, 2023
+"""
+
 from contextlib import asynccontextmanager
 import httpx
 from fastapi import FastAPI
@@ -8,12 +14,14 @@ from app.settings import get_settings
 
 settings = get_settings()
 
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     """Declaration and attachment of the lifespan objects"""
     _app.requests_client = httpx.AsyncClient()
     yield
     await _app.requests_client.aclose()
+
 
 app = FastAPI(lifespan=lifespan, title=settings.APP_NAME, version=settings.VERSION)
 

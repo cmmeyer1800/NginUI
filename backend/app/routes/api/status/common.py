@@ -6,6 +6,7 @@ Author: Collin Meyer
 Last Modified: November 15, 2023
 """
 
+
 def nginx_stub_decode(stub_info: str) -> dict:
     """Decoding of Nginx stub status text info into JSON
     More info on stub_status:
