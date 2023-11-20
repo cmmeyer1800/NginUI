@@ -3,18 +3,19 @@
 Status routes for Nginui backend
 
 Author: Collin Meyer
-Last Modified: November 15, 2023
+Last Modified: November 19, 2023
 """
 
 from fastapi import APIRouter, Request
 
 from app.routes.api.status.common import nginx_stub_decode
+from app.models.status import NginxStubStatus
 
 router = APIRouter(prefix="/status")
 
 
 @router.get("/nginx")
-async def nginx_status(request: Request):
+async def nginx_status(request: Request) -> NginxStubStatus:
     """Nginx Status Endpoint
 
     Args:

@@ -18,9 +18,6 @@ from app.routes.api.configs.common import (
 
 router = APIRouter(prefix="/configs")
 
-
-# TODO : Add FastAPI Response and Request Models
-
 @router.get("/")
 async def configs(response: Response):
     """GET /configs Route
