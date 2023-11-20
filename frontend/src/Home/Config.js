@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import { FaPlusSquare } from 'react-icons/fa';
+import { FaPlusSquare, FaEdit } from 'react-icons/fa';
 
 import { Column, Columns } from "../components/Columns";
 import Notification from "../components/Notification";
-import { IconText } from "../components/Icons";
+import { IconText, Icon } from "../components/Icons";
 import ConfigToolbar from "./ConfigToolbar";
 
 
@@ -15,7 +15,7 @@ const BetterTextArea = (props) => {
         if(props.val !== null && props.val !== undefined){
             setHeight(props.val.split(/\r\n|\r|\n/).length)
         }
-    })
+    }, [props.val])
 
     return (        
         <textarea
@@ -28,7 +28,7 @@ const BetterTextArea = (props) => {
             props.updateVal(e.target.value);
           }}
           onKeyDown={(e) => {
-            if (e.key == 'Tab') {
+            if (e.key === 'Tab') {
               e.preventDefault();
               const { selectionStart, selectionEnd } = e.target;
         
@@ -93,7 +93,7 @@ const AddConfigModal = (props) => {
                         }} className="input" type="text" placeholder="Config Name"></input>
                     </p>
                     <p className="control">
-                        <a className="button is-static">
+                        <a className="button is-static" href="/#create">
                         .conf
                         </a>
                     </p>
@@ -161,7 +161,7 @@ const EditConfigModal = (props) => {
                 console.error(error)
             });
         }
-    }, [props.active]);
+    }, [props.active, props.name]);
 
     return (
         <div className={`modal ${props.active ? 'is-active':''}`}>
@@ -226,10 +226,7 @@ const Config = (props) => {
     return (
         <>
         <EditConfigModal name={props.config.name} active={editActive} setActive={setEditActive}/>
-        <a className="box" href={`/${props.config.name}`} onClick={(e) => {
-            e.preventDefault();
-            setEditActive(true);
-        }}>
+        <div className="box">
             <article className="media">
                 <div className="media-content">
                     <div className="content">
@@ -245,16 +242,25 @@ const Config = (props) => {
                     </div>
                 </div>
                 <div className="media-right">
-                    <button className="delete" onClick={(e) => {
+                    <a className="mr-2" href={`/${props.config.name}`} onClick={(e) => {
                         e.preventDefault();
-                        doDelete(props.config.name);
-                        setTimeout(() => {
-                            props.reload();
-                        }, 250 );
+                        setEditActive(true);
+                    }}>
+                        <Icon icon={<FaEdit/>}/>
+                    </a>
+                    <button className="delete" style={{marginTop: "2px"}} onClick={(e) => {
+                        e.preventDefault();
+                        const confirmDelete = window.confirm("Are you sure you want to delete this config?");
+                        if (confirmDelete) {
+                            doDelete(props.config.name);
+                            setTimeout(() => {
+                                props.reload();
+                            }, 250);
+                        }
                     }}></button>
                 </div>
             </article>
-        </a>
+        </div>
         </>
     )
 }

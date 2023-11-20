@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic_settings import BaseSettings
 
 
-class Settings(BaseSettings):
+class Settings(BaseSettings): # pylint: disable=too-few-public-methods
     """Application Settings
     """
     APP_NAME: str = "NginUI"

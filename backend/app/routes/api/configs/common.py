@@ -22,6 +22,18 @@ import asyncio
 
 
 def parse_config(conf: str) -> dict:
+    """Read Nginx config to get basic information
+
+    Args:
+        conf (str): Nginx config file content
+    
+    Returns:
+        tuple: (
+            "server_name": str,
+            "listen": str,
+            "locations": int
+        )
+    """
 
     locs = conf.count("location")
 
@@ -45,12 +57,17 @@ def parse_config(conf: str) -> dict:
 
 
 def get_configs():
+    """get all Nginx configs
+
+    Returns:
+        list[dict]: list of Nginx configs
+    """
 
     try:
         confs = []
 
         for conf in os.listdir("/etc/nginx/conf.d"):
-            with open(f"/etc/nginx/conf.d/{conf}", "r") as f:
+            with open(f"/etc/nginx/conf.d/{conf}", "r", encoding="utf-8") as f:
                 conf_content = f.read()
                 parsed_conf = parse_config(conf_content)
                 confs.append({
@@ -62,7 +79,7 @@ def get_configs():
                         os.path.getmtime(f"/etc/nginx/conf.d/{conf}")
                     ).strftime('%m/%d/%Y-%H:%M:%S')
                 })
-    except Exception as e:
+    except IOError as e:
         print(e) # TODO: use logging
         return None
 
@@ -75,7 +92,7 @@ def delete_config(name: str) -> bool:
         try:
             os.remove(config_path)
             return True
-        except Exception as e:
+        except IOError as e:
             print(e) # TODO: use logging
             return False
     else:
@@ -88,10 +105,10 @@ def create_config(name: str, content: str) -> bool:
         return 1
     else:
         try:
-            with open(config_path, "w") as f:
+            with open(config_path, "w", encoding="utf-8") as f:
                 f.write(content)
             return 0
-        except Exception as e:
+        except IOError as e:
             print(e) # TODO: use logging
             return 2
 
@@ -103,7 +120,7 @@ async def verify_configs():
     stdout=asyncio.subprocess.PIPE,
     stderr=asyncio.subprocess.PIPE)
 
-    stdout, stderr = await proc.communicate()
+    _, stderr = await proc.communicate()
     stderr = stderr.decode("utf-8")
 
     return ("test failed" not in stderr, stderr)
@@ -113,9 +130,9 @@ def get_config(name: str) -> str:
     config_path = f"/etc/nginx/conf.d/{name}"
     if os.path.exists(config_path):
         try:
-            with open(config_path, "r") as f:
+            with open(config_path, "r", encoding="utf-8") as f:
                 return f.read()
-        except Exception as e:
+        except IOError as e:
             print(e) # TODO: use logging
             return None
     else:
@@ -126,10 +143,10 @@ def set_config(name: str, content: str) -> bool:
     config_path = f"/etc/nginx/conf.d/{name}"
     if os.path.exists(config_path):
         try:
-            with open(config_path, "w") as f:
+            with open(config_path, "w", encoding="utf-8") as f:
                 f.write(content)
             return 0
-        except Exception as e:
+        except IOError as e:
             print(e) # TODO: use logging
             return 2
     else:
